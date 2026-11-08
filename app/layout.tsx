@@ -4,8 +4,8 @@ import './globals.css'
 import { SiteShell } from '@/components/site-shell'
 
 export const metadata: Metadata = {
-  title: 'DogeGang+ | Good games. Better company.',
-  description: 'Find your next game night with DogeGang+. Your people, your games, your next great night.',
+  title: 'DogeGang+ Game Nights',
+  description: 'Game night scheduling, voting, and RSVPs for DogeGang+.',
   generator: 'v0.app',
   icons: {
     icon: [
