@@ -1,10 +1,11 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import { SiteShell } from '@/components/site-shell'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'DogeGang+ | Good games. Better company.',
+  description: 'Find your next game night with DogeGang+. Your people, your games, your next great night.',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -26,11 +27,8 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'light dark',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
+  colorScheme: 'dark',
+  themeColor: '#101113',
 }
 
 export default function RootLayout({
@@ -39,9 +37,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body className="antialiased">
-        {children}
+        <a href="#main-content" className="skip-link">Skip to content</a>
+        <SiteShell>{children}</SiteShell>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
