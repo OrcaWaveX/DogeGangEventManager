@@ -2,6 +2,7 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { SiteShell } from '@/components/site-shell'
+import { getViewer, isAdmin } from '@/lib/session'
 
 export const metadata: Metadata = {
   title: 'DogeGang+ Game Nights',
@@ -31,16 +32,20 @@ export const viewport: Viewport = {
   themeColor: '#101113',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const viewer = await getViewer()
+  const roleLabel = viewer?.role === 'owner' ? 'Owner' : viewer?.role === 'admin' ? 'Admin' : 'Member'
   return (
     <html lang="en" className="dark">
       <body className="antialiased">
         <a href="#main-content" className="skip-link">Skip to content</a>
-        <SiteShell>{children}</SiteShell>
+        <SiteShell viewer={viewer ? { name: viewer.name, roleLabel } : null} isAdmin={isAdmin(viewer)}>
+          {children}
+        </SiteShell>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
