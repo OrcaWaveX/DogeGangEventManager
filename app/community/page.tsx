@@ -1,3 +1,30 @@
-import Link from 'next/link'
 import { Gamepad2, HeartHandshake, Users } from 'lucide-react'
-export default function CommunityPage() { return <div className="dashboard"><div className="page-heading"><div><div className="eyebrow">YOUR PEOPLE ARE HERE</div><h1>One gang. All kinds of gamers.</h1><p>A little less matchmaking. A lot more making friends.</p></div></div><section className="community-hero"><img src="/images/dg-logo.png" alt="DogeGang Plus" width={100} height={100}/><h2>Good games bring us together.<br/>Good people make us stay.</h2><p>DogeGang+ is a Discord-based community for shared adventures, friendly competition, and the occasional “just one more.” Whatever you play, you belong here.</p><Link href="/auth/sign-up" className="primary-link">Find your people</Link></section><div className="community-values">{[{icon:Gamepad2,title:'Play your way',text:'Co-op, competitive, or completely casual. There is no single way to be part of the gang.'},{icon:HeartHandshake,title:'Keep it welcoming',text:'Respect your teammates, welcome new faces, and make room for different skill levels.'},{icon:Users,title:'Build it together',text:'Game nights start with the community. Your availability and game choices help shape what comes next.'}].map(({icon:Icon,title,text})=><section className="rail-card" key={title}><Icon/><h3>{title}</h3><p>{text}</p></section>)}</div><p className="muted-note">Community polls and elections are planned for a future release.</p></div> }
+
+const values = [
+  { icon: Gamepad2, title: 'Play your way', text: 'Co-op, competitive, or casual. Any style is fine.' },
+  { icon: HeartHandshake, title: 'Keep it friendly', text: 'Respect your teammates and make room for different skill levels.' },
+  { icon: Users, title: 'Shared decisions', text: 'Availability and game votes decide what gets played and when.' },
+]
+
+export default function CommunityPage() {
+  return (
+    <div className="dashboard">
+      <div className="page-heading">
+        <div>
+          <h1>Community</h1>
+          <p>DogeGang+ is a Discord-based gaming group.</p>
+        </div>
+      </div>
+      <div className="community-values">
+        {values.map(({ icon: Icon, title, text }) => (
+          <section className="rail-card" key={title}>
+            <Icon />
+            <h3>{title}</h3>
+            <p>{text}</p>
+          </section>
+        ))}
+      </div>
+      <p className="muted-note">Community polls and elections are planned for a later release.</p>
+    </div>
+  )
+}
