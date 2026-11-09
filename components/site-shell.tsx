@@ -1,17 +1,28 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Gamepad2, ShieldCheck, UserRound } from 'lucide-react'
+import { Bell, Gamepad2, ShieldCheck, UserRound } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type ShellViewer = { name: string; roleLabel: string } | null
 
-export function SiteShell({ children, viewer, isAdmin }: { children: React.ReactNode; viewer: ShellViewer; isAdmin: boolean }) {
+export function SiteShell({
+  children,
+  viewer,
+  isAdmin,
+  unread = 0,
+}: {
+  children: React.ReactNode
+  viewer: ShellViewer
+  isAdmin: boolean
+  unread?: number
+}) {
   const path = usePathname()
   const navigation = [
-    { href: '/', label: 'Game Nights', icon: Gamepad2, active: path === '/' || path.startsWith('/game-nights') },
-    ...(isAdmin ? [{ href: '/admin', label: 'Admin', icon: ShieldCheck, active: path.startsWith('/admin') }] : []),
-    { href: '/account', label: 'Account', icon: UserRound, active: path.startsWith('/account') },
+    { href: '/', label: 'Game Nights', icon: Gamepad2, active: path === '/' || path.startsWith('/game-nights'), badge: 0 },
+    ...(viewer ? [{ href: '/notifications', label: 'Notifications', icon: Bell, active: path.startsWith('/notifications'), badge: unread }] : []),
+    ...(isAdmin ? [{ href: '/admin', label: 'Admin', icon: ShieldCheck, active: path.startsWith('/admin'), badge: 0 }] : []),
+    { href: '/account', label: 'Account', icon: UserRound, active: path.startsWith('/account'), badge: 0 },
   ]
 
   return (
@@ -24,10 +35,17 @@ export function SiteShell({ children, viewer, isAdmin }: { children: React.React
           </span>
         </Link>
         <nav aria-label="Main navigation">
-          {navigation.map(({ href, label, icon: Icon, active }) => (
-            <Link key={href} href={href} aria-current={active ? 'page' : undefined} className={cn('nav-link', active && 'nav-active')} aria-label={label}>
+          {navigation.map(({ href, label, icon: Icon, active, badge }) => (
+            <Link
+              key={href}
+              href={href}
+              aria-current={active ? 'page' : undefined}
+              className={cn('nav-link', active && 'nav-active')}
+              aria-label={badge ? `${label}, ${badge} unread` : label}
+            >
               <Icon size={18} aria-hidden="true" />
               <span>{label}</span>
+              {badge > 0 && <span className="nav-badge" aria-hidden="true">{badge > 9 ? '9+' : badge}</span>}
             </Link>
           ))}
         </nav>

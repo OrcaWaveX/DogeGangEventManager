@@ -3,7 +3,7 @@ import { CalendarDays, Plus } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { NightCard } from '@/components/night-card'
-import { listPublishedNights, type NightSummary } from '@/lib/game-nights'
+import { listMyNights, listPublishedNights, type NightSummary } from '@/lib/game-nights'
 import { getViewer, isAdmin } from '@/lib/session'
 
 export const dynamic = 'force-dynamic'
@@ -24,6 +24,11 @@ export default async function HomePage() {
   const cutoff = Date.now() - SIX_HOURS
   const upcoming = nights.filter((night) => !night.startsAt || night.startsAt.getTime() >= cutoff)
   const past = nights.filter((night) => night.startsAt && night.startsAt.getTime() < cutoff).reverse()
+  const mine = viewer
+    ? (await listMyNights(viewer.id).catch(() => []))
+        .filter((night) => !night.startsAt || night.startsAt.getTime() >= cutoff)
+        .sort((a, b) => (a.startsAt?.getTime() ?? Infinity) - (b.startsAt?.getTime() ?? Infinity))
+    : []
   const [next, ...later] = upcoming
 
   return (
@@ -46,6 +51,19 @@ export default async function HomePage() {
           <span>Sign in to RSVP, vote on dates and games, and see who else is coming.</span>
           <Link href="/auth/sign-in">Sign in</Link>
         </div>
+      )}
+
+      {mine.length > 0 && (
+        <section aria-labelledby="mine-heading">
+          <div className="section-heading">
+            <h2 id="mine-heading">Your game nights</h2>
+          </div>
+          <div className="night-grid">
+            {mine.map((night) => (
+              <NightCard key={night.id} night={night} myStatus={night.myStatus} />
+            ))}
+          </div>
+        </section>
       )}
 
       {failed ? (

@@ -6,8 +6,8 @@ import { DateTimeField } from '@/components/datetime-field'
 import { LocalTime } from '@/components/local-time'
 import { NightChips } from '@/components/night-card'
 import { ConfirmSubmit } from '@/components/confirm-submit'
-import { createGameNight, grantAdmin, revokeAdmin } from '@/app/admin/actions'
-import { listAllNights, listTeam } from '@/lib/game-nights'
+import { createFromTemplate, createGameNight, grantAdmin, revokeAdmin } from '@/app/admin/actions'
+import { listAllNights, listTeam, listTemplates } from '@/lib/game-nights'
 import { requireAdmin } from '@/lib/session'
 
 export const dynamic = 'force-dynamic'
@@ -22,7 +22,7 @@ const teamMessages: Record<string, string> = {
 export default async function AdminPage({ searchParams }: { searchParams: Promise<{ team?: string; error?: string; deleted?: string }> }) {
   const viewer = await requireAdmin()
   const { team, error, deleted } = await searchParams
-  const [nights, members] = await Promise.all([listAllNights(), listTeam()])
+  const [nights, members, templates] = await Promise.all([listAllNights(), listTeam(), listTemplates()])
 
   return (
     <div className="dashboard">
@@ -44,10 +44,6 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             {error === 'title' && <span className="form-error">A title is required.</span>}
           </div>
           <DateTimeField name="startsAt" label="Date and time (optional)" hint="Leave blank to run a date poll instead." />
-          <div className="form-field">
-            <label htmlFor="game">Game (optional)</label>
-            <Input id="game" name="game" maxLength={60} placeholder="Leave blank to run a game vote" />
-          </div>
           <div className="form-field">
             <label htmlFor="capacity">Spots (optional)</label>
             <Input id="capacity" name="capacity" type="number" min={1} max={1000} inputMode="numeric" />
@@ -71,6 +67,29 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           </div>
         </form>
       </section>
+
+      {templates.length > 0 && (
+        <section className="panel" aria-labelledby="templates-heading">
+          <h2 id="templates-heading">Templates</h2>
+          <ul className="admin-list">
+            {templates.map((template) => (
+              <li key={template.id} className="admin-row">
+                <div>
+                  <strong>{template.title}</strong>
+                  <Link href={`/admin/game-nights/${template.id}`} className="small-copy underline">
+                    Edit template
+                  </Link>
+                </div>
+                <form action={createFromTemplate} className="inline-form">
+                  <input type="hidden" name="templateId" value={template.id} />
+                  <DateTimeField name="startsAt" label="Date for new night" />
+                  <Button type="submit" variant="outline">Create from template</Button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section aria-labelledby="all-heading">
         <div className="section-heading">
